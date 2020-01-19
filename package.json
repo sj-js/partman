@@ -1,0 +1,44 @@
+{
+  "name": "@sj-js/partman",
+  "version": "1.0.4",
+  "description": "partman",
+  "main": "./index.js",
+  "author": "souljungkim@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "build": "gulp",
+    "deploy": "npm publish",
+    "gitk": "gitk"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sj-js/partman.git",
+    "web": "https://github.com/sj-js/partman"
+  },
+  "dependencies": {
+    "@sj-js/crossman": "^1.0.4"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-bower": "0.0.15",
+    "gulp-clean": "^0.3.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-concat-css": "^2.2.0",
+    "gulp-csslint": "^1.0.1",
+    "gulp-if": "^2.0.0",
+    "gulp-jshint": "^2.0.1",
+    "gulp-livereload": "^4.0.1",
+    "gulp-minify-html": "^1.0.5",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.1",
+    "gulp-shell": "^0.5.2",
+    "gulp-strip-debug": "^1.1.0",
+    "gulp-uglify": "^1.5.1",
+    "gulp-uglifycss": "^1.0.5",
+    "gulp-webserver": "^0.9.1",
+    "jshint": "^2.9.3",
+    "lodash": "4.17.13",
+    "lodash.template": "4.5.0",
+    "open": "6.0.0"
+  }
+}
