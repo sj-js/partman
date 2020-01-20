@@ -26,7 +26,7 @@
 
 1. Load library and new instance
     ```html
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sj-js/slideman/dist/css/slideman.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sj-js/slideman/dist/css/partman.css">
     <script src="https://cdn.jsdelivr.net/gh/sj-js/crossman/dist/js/crossman.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/sj-js/fixman/dist/js/partman.js"></script>
     <script>
@@ -35,6 +35,7 @@
     ```  
     OR in ES6+
     ```js
+    require('@sj-js/partman/src/css/partman.css');
     const partman = require('@sj-js/partman');
     ```
    
@@ -138,5 +139,4 @@
             5
         </div> 
     </body>
-
     ``` 
