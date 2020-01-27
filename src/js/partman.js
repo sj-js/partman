@@ -16,6 +16,7 @@ try{
  * Module
  ***************************************************************************/
 function PartMan(options){
+    this.event = new SjEvent();
     this.globalOption = {
         partMarginHeight: null,
         firstPartMarginHeight: 50,
@@ -27,6 +28,7 @@ function PartMan(options){
     this.partFoldContextElement = newEl('div').addClass('part-fold-context').returnElement();
     this.partFoldAnchorIdAndDataMap = {};
     this.partFoldIdAndDataMap = {};
+    this.latestFoldElement = null;
     var that = this;
     window.addEventListener('resize', function(e){
         that.resizePartAreaElement();
@@ -41,6 +43,29 @@ function PartMan(options){
 try {
     module.exports = exports = PartMan;
 } catch (e) {}
+
+
+
+/***************************************************************************
+ *
+ * EVENT
+ *
+ ***************************************************************************/
+PartMan.prototype.addEventListener               = function(element, eventName, eventFunc){ this.event.addEventListener(element, eventName, eventFunc); return this; };
+PartMan.prototype.addEventListenerById           = function(element, eventName, eventFunc){ this.event.addEventListenerById(element, eventName, eventFunc); return this; };
+PartMan.prototype.addEventListenerByEventName    = function(eventName, eventFunc){ this.event.addEventListenerByEventName(eventName, eventFunc); return this; };
+PartMan.prototype.hasEventListener               = function(element, eventName, eventFunc){ return this.event.hasEventListener(element, eventName, eventFunc); };
+PartMan.prototype.hasEventListenerById           = function(element, eventName, eventFunc){ return this.event.hasEventListenerById(element, eventName, eventFunc); };
+PartMan.prototype.hasEventListenerByEventName    = function(eventName, eventFunc){ return this.event.hasEventListenerByEventName(eventName, eventFunc); };
+PartMan.prototype.hasEventListenerByEventFunc    = function(eventFunc){ return this.event.hasEventListenerByEventFunc(eventFunc); };
+PartMan.prototype.removeEventListener            = function(element, eventName, eventFunc){ return this.event.removeEventListener(element, eventName, eventFunc); };
+PartMan.prototype.removeEventListenerById        = function(element, eventName, eventFunc){ return this.event.removeEventListenerById(element, eventName, eventFunc); };
+PartMan.prototype.removeEventListenerByEventName = function(eventName, eventFunc){ return this.event.removeEventListenerByEventName(eventName, eventFunc); };
+PartMan.prototype.removeEventListenerByEventFunc = function(eventFunc){ return this.event.removeEventListenerByEventFunc(eventFunc); };
+PartMan.prototype.execEventListener              = function(element, eventName, event){ return this.event.execEventListener(element, eventName, event); };
+PartMan.prototype.execEventListenerById          = function(element, eventName, event){ return this.event.execEventListenerById(element, eventName, event); };
+PartMan.prototype.execEventListenerByEventName   = function(eventName, event){ return this.event.execEventListenerByEventName(eventName, event); };
+PartMan.prototype.execEvent                      = function(eventMap, eventNm, event){ return this.event.execEvent(eventMap, eventNm, event); };
 
 
 
@@ -92,7 +117,7 @@ PartMan.prototype.makePartFoldElement = function(){
         };
         getEl(it).attr('data-part-fold-a', partFoldAnchorId).addEventListener('click', function(e){
             var partFoldId = getEl(it).attr('data-part-fold-a');
-            that.toggleContent(partFoldId);
+            that.toggleContent(partFoldId).moveScroll();
         });
     });
     /* 컨텐츠 숨기기 div 배치하기*/
@@ -106,55 +131,78 @@ PartMan.prototype.makePartFoldElement = function(){
     }
 };
 
-PartMan.prototype.toggleContent = function(partFoldId){
+PartMan.prototype.toggleContent = function(partFoldId, targetElement){
     var that = this;
     var partFoldAnchorElement = this.getPartFoldAnchorElement(partFoldId);
     var partFoldElement = this.getPartFoldElement(partFoldId);
-    if (!partFoldAnchorElement || !partFoldElement)
-        return false;
+    if (!partFoldElement)
+        return this;
+    if (!partFoldAnchorElement && !targetElement)
+        return this;
     /* 컨텐츠 활성화 결정 (이미 활성화되어 있다면 닫을 수 있도록 false)*/
     /* 컨텐츠 활성화 최종 결정 */
     getEl(partFoldElement).exists(function(it){
         if (getEl(it).hasClass('content-none')){
-            that.openContent(partFoldId);
+            that.openContent(partFoldId, targetElement);
         }else{
             that.closeContentAll();
         }
     });
+    return this;
 };
 
-PartMan.prototype.openContent = function(partFoldId){
+PartMan.prototype.openContent = function(partFoldId, targetElement){
     var that = this;
     var partFoldAnchorElement = this.getPartFoldAnchorElement(partFoldId);
     var partFoldElement = this.getPartFoldElement(partFoldId);
-    if (!partFoldAnchorElement || !partFoldElement)
-        return false;
+    this.latestFoldElement = null;
+
+    if (!partFoldElement)
+        return this;
+    if (!partFoldAnchorElement && !targetElement)
+        return this;
+    if (typeof targetElement == 'string')
+        targetElement = getEl(targetElement).returnElement();
 
     this.closeContentAll();
 
     /* 현재 활성화된 컨텐트 정보 저장 */
     this.nowPartFoldElement = partFoldElement;
-    this.nowPartFoldAnchorElement = partFoldAnchorElement;
+    this.nowPartFoldAnchorElement = null;
+    this.nowPartFoldTargetElement = null;
 
-    /* 클릭한 객체 티내기 */
-    searchEl('[data-part-fold-a]').each(function(it){
-        getEl(it).removeClass('part-fold-active');
-    });
-    getEl(partFoldAnchorElement).addClass('part-fold-active');
-
-    /* 클릭한 기사보다 아래에 있는 기사의 첫칸의 전 객체 */
     var target = null;
     var lastThisLine = null;
-    searchEl('[data-part-fold-a]').some(function(it){
-        if (partFoldAnchorElement.offsetTop < it.offsetTop) {
-            target = it;
-            return true;
-        }else if(partFoldAnchorElement.offsetTop == it.offsetTop){
-            lastThisLine = it.nextSibling;
-        }
-    });
-    if (target == null)
-        target = lastThisLine;
+    var targetToNext = null;
+
+    if (partFoldAnchorElement){
+        this.nowPartFoldAnchorElement = partFoldAnchorElement;
+        this.latestFoldElement = partFoldAnchorElement;
+        /* 클릭한 객체 티내기 */
+        searchEl('[data-part-fold-a]').each(function(it){
+            getEl(it).removeClass('part-fold-active');
+        });
+        getEl(partFoldAnchorElement).addClass('part-fold-active');
+        /* 클릭한 기사보다 아래에 있는 기사의 첫칸의 전 객체 */
+        searchEl('[data-part-fold-a]').some(function(it){
+            targetToNext = it;
+            if (partFoldAnchorElement.offsetTop < it.offsetTop) {
+                target = it;
+                return true;
+            }else if (partFoldAnchorElement.offsetTop == it.offsetTop){
+                lastThisLine = it.nextSibling;
+            }
+        });
+        if (target == null)
+            target = lastThisLine;
+
+    }
+
+    if (targetElement){
+        targetToNext = targetElement;
+        this.nowPartFoldTargetElement = targetElement;
+        this.latestFoldElement = targetElement;
+    }
 
     getEl(that.partFoldContextElement)
         .add(
@@ -170,11 +218,18 @@ PartMan.prototype.openContent = function(partFoldId){
                     // newEl('div').addClass('content-after')
                 ])
         )
-        .appendToFrontOf(target);
-    // sj.whenResize();
-
+    if (target){
+        getEl(that.partFoldContextElement).appendToFrontOf(target);
+    }else{
+        getEl(that.partFoldContextElement).appendToNextOf(targetToNext);
+    }
     /* 열린 내용으로 포커스 */
-    that.moveScroll(partFoldAnchorElement, partFoldElement);
+    // that.moveScroll(partFoldAnchorElement, partFoldElement);
+    // this.latestFoldElement = partFoldAnchorElement;
+
+    var eventObject = {element:partFoldElement, partFoldId:partFoldId};
+    this.execEventListenerByEventName('open', eventObject);
+    return this;
 };
 
 PartMan.prototype.closeContentAll = function(){
@@ -182,18 +237,27 @@ PartMan.prototype.closeContentAll = function(){
     var that = this;;
     searchEl('[data-part-fold-a]').each(function(it){
         getEl(it).removeClass('part-fold-active');
-        var partFoldId = getEl(it).attr('data-part-fold-a');
+    });
+    searchEl('[data-part-fold]').each(function(it){
+        var partFoldId = getEl(it).attr('data-part-fold');
         var partFoldElement = that.getPartFoldElement(partFoldId);
         getEl(partFoldElement).exists(function(obj){
             obj.addClass('content-none').setStyle('minHeight', '0px').appendTo(that.hiddenDiv);
         });
     });
+
     //PartFoldContext to Hidden Area
     // getEl(that.partFoldContextElement).appendTo(that.hiddenDiv);
     getEl(that.hiddenDiv).add([
         that.partFoldContextElement,
         searchEl('[data-part-fold-tool]')
     ]);
+    this.latestFoldElement = null;
+    this.nowPartFoldAnchorElement = null;
+    this.nowPartFoldTargetElement = null;
+    //Event
+    var eventObject = {};
+    this.execEventListenerByEventName('close', eventObject);
 };
 
 PartMan.prototype.whenResize = function(){
@@ -203,31 +267,50 @@ PartMan.prototype.whenResize = function(){
     var that = this;
     var target = null;
     var lastThisLine = null;
-
+    var targetToNext = null;
     getEl(this.hiddenDiv).add(this.partFoldContextElement);
 
-    searchEl('[data-part-fold-a]').some(function(it){
-        if (that.nowPartFoldAnchorElement.offsetTop < it.offsetTop){
-            target = it;
-            return true;
-        }else if(that.nowPartFoldAnchorElement.offsetTop == it.offsetTop){
-            lastThisLine = it.nextSibling;
-        }
-    });
-    if (target == null)
-        target = lastThisLine;
+    if (this.nowPartFoldAnchorElement){
+        searchEl('[data-part-fold]').some(function(it){
+            targetToNext = it;
+            if (that.nowPartFoldAnchorElement.offsetTop < it.offsetTop){
+                target = it;
+                return true;
+            }else if(that.nowPartFoldAnchorElement.offsetTop == it.offsetTop){
+                lastThisLine = it.nextSibling;
+            }
+        });
+        if (target == null)
+            target = lastThisLine;
+    }
 
-    getEl(this.partFoldContextElement).appendToFrontOf(target);
+    if (this.nowPartFoldTargetElement){
+        targetToNext = this.nowPartFoldTargetElement;
+    }
+
+    if (target){
+        getEl(that.partFoldContextElement).appendToFrontOf(target);
+    }else{
+        getEl(that.partFoldContextElement).appendToNextOf(targetToNext);
+    }
     // sj.whenResize();
 };
 
 /* 편의를 위한 스크롤 내리기 임시 방편 */
-PartMan.prototype.moveScroll = function(obj, contentObj){
+PartMan.prototype.moveScroll = function(targetElement, partFoldElement){
+    //Check Auto Latest Opened PartFold Target
+    if (!targetElement && !partFoldElement){
+        if (this.latestFoldElement){
+            targetElement = this.latestFoldElement;
+        }else{
+            return this;
+        }
+    }
     var deltaForScroll = -55;
-    setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 50);
-    setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 100);
-    setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; contentObj.style.height = 'auto'; }, 125);
-    setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 150);
+    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 50);
+    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 100);
+    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 125);
+    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 150);
     // setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 350);
     // setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 500);
 };
@@ -250,7 +333,12 @@ PartMan.prototype.eachPartIcon = function(closure){
     }
     return this;
 };
-
+PartMan.prototype.eachPartRef = function(closure){
+    searchEl('[data-part-fold-ref]').each(function(it){
+        closure(it);
+    });
+    return this;
+};
 
 
 
