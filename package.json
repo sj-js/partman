@@ -1,6 +1,6 @@
 {
   "name": "@sj-js/partman",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "partman",
   "main": "./index.js",
   "author": "souljungkim@gmail.com",
@@ -16,7 +16,7 @@
     "web": "https://github.com/sj-js/partman"
   },
   "dependencies": {
-    "@sj-js/crossman": "^1.0.5"
+    "@sj-js/crossman": "^1.0.7"
   },
   "devDependencies": {
     "gulp": "^4.0.2",
