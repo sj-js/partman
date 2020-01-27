@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<HTML>
+    <head>
+        <meta charset="utf-8" />
+        <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+        <script src="https://cdn.jsdelivr.net/npm/@sj-js/crossman/dist/js/crossman.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@sj-js/partman/dist/js/partman.min.js"></script>
+        <script>
+            var partman = new PartMan();
+        </script>
+        <script>
+            partman.setup({firstPartMarginHeight:100, partMarginHeight:50, lastPartMarginHeight:500}).detect();
+        </script>
+    </head>
+
+    <body>
+        <div data-part style="background:#EEFF88;">
+            Hello Part Area 1
+        </div>
+        <div data-part style="background:#DDAAFF;">
+            Hello Part Area 2
+        </div>
+        <div data-part style="background:gold;">
+            Hello Part Area 3
+        </div>
+        <div data-part style="background:skyblue;">
+            Hello Part Area 4
+        </div>
+    </body>
+</HTML>

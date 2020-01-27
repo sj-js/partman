@@ -5,9 +5,9 @@
 [![Release](https://img.shields.io/github/release/sj-js/partman.svg)](https://github.com/sj-js/partman/releases)
 [![License](https://img.shields.io/github/license/sj-js/partman.svg)](https://github.com/sj-js/partman/releases)
 
-- 쉽게 Key Event를 다룰 수 있습니다.
-- Source: https://github.com/sj-js/partman
-- Document: https://sj-js.github.io/sj-js/partman
+- 구역을 분리하여 강조합니다. 
+- ✨ Source: https://github.com/sj-js/partman
+- ✨ Document: https://sj-js.github.io/sj-js/partman
 
 
 
@@ -22,67 +22,57 @@
 
 ## 1. Getting Started
 
-### 1-1. How to use
-
-1. Load library and new instance
+### 1-1. How to load?
+- Browser
     ```html
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sj-js/slideman/dist/css/partman.css">
-    <script src="https://cdn.jsdelivr.net/gh/sj-js/crossman/dist/js/crossman.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/sj-js/fixman/dist/js/partman.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sj-js/partman/dist/css/partman.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@sj-js/crossman/dist/js/crossman.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@sj-js/partman/dist/js/partman.min.js"></script>
     <script>
-         var partman = new PartMan().detect();
-    </script>
-    ```  
-    OR in ES6+
-    ```js
-    require('@sj-js/partman/src/css/partman.css');
-    const partman = require('@sj-js/partman');
-    ```
-   
-2. Set `data-part` to target element   
-   ```html
-   <div data-part>Hello Part Area 1</div>
-   <div data-part>Hello Part Area 2</div>
-   ```
-   
-3. Run `detect()` then, When Page is Loaded, detect and apply elements with a `data-part` attribute    
-   ```js
-   partman.detect();
-   ```
-
-
-
-### 1-2. Simple Example
-- For convenience, the following code, which loads and creates a Library in the example, is omitted.
-    ```html
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sj-js/partman/dist/css/partman.css">
-    <script src="https://cdn.jsdelivr.net/gh/sj-js/crossman/dist/js/crossman.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/sj-js/partman/dist/js/partman.js"></script>
-    <script>
-         var partman = new PartMan().detect();
+         var partman = new PartMan();
     </script>
     ```
-  
     *@* *+prefix* *x* *@* 
     ```html
     <link rel="stylesheet" href="../partman/partman.css">
     <script src="../crossman/crossman.js"></script>
     <script src="../partman/partman.js"></script>
     <script>
-         var partman = new PartMan().detect();
+       var partman = new PartMan();
     </script>
-    ```    
+    ```
+- ES6+
+    ```bash
+    npm install @sj-js/partman
+    ```
+    ```js
+    require('@sj-js/partman/dist/css/partman.css');
+    const PartMan = require('@sj-js/partman');
+    const partman = new PartMan();
+    ```
 
-##### Sample A
-- Example)
+
+
+### 1-2. Simple Example
+For convenience, 1-1 code, which loads and creates a Library in the example, is omitted.
+
+##### Example - data-part
+1. Set `data-part` attribute to target element and set color   
+   ```html
+   <div data-part style="background:#EEFF88;">Hello Part Area 1</div>
+   <div data-part style="background:#DDAAFF;">Hello Part Area 2</div>
+   ```
+   
+2. Run `detect()` then, When Page is Loaded, detect and apply elements with a `data-part` attribute    
+   ```js
+   partman.detect();
+   ```
+   
+3. 👨‍💻
     *@* *!* *@*
     ```html
     <script>
-        partman.setup({
-            firstPartMarginHeight:100,
-            partMarginHeight:50,
-            lastPartMarginHeight:500            
-        });
+        partman.setup({firstPartMarginHeight:100, partMarginHeight:50, lastPartMarginHeight:500}).detect();
     </script>
     <body>
         <div data-part style="background:#EEFF88;">
@@ -99,25 +89,50 @@
         </div>
     </body>
     ``` 
-
-##### Sample B
-- Example)
+  
+##### Example - data-part-fold
+1. Set `data-part-fold-a` attribute to button element to open folded content
+   ```html
+   <button data-part-fold-a="fold-1">fold-1</button>
+   <button data-part-fold-a="fold-2">fold-2</button>
+   ```
+2. Set `data-part-fold-tool` attribute to tool element on top of content
+   ```html
+   <div data-part-fold-tool>
+       <button onclick="partman.closeContentAll();">X</button>
+   </div>  
+   ```
+3. Set `data-part-fold` attribute to folded content   
+   ```html
+   <div data-part-fold="fold-1">
+       1
+   </div>
+   <div data-part-fold="fold-2">
+       2     
+   </div>
+   ```   
+4. Run `detect()` then, When Page is Loaded, detect and apply elements with a `data-part` attribute    
+   ```js
+   partman.detect();
+   ```
+5. 👨‍💻
     *@* *!* *@*
     ```html
     <style>
         html { scroll-behavior: smooth; }
-        button[data-part-fold-a] { width:150px; height:100px; cursor:pointer; }
+        button[data-part-fold-a] { width:120px; height:100px; cursor:pointer; }
         .part-fold-active { border:2px solid skyblue; background:skyblue; }                
     </style>
+    <script> 
+        partman.detect(); 
+    </script>
     <body>
         <!-- Icons -->
-        <div>
-            <button data-part-fold-a="fold-1">fold-1</button>
-            <button data-part-fold-a="fold-2">fold-2</button>
-            <button data-part-fold-a="fold-3">fold-3</button>
-            <button data-part-fold-a="fold-4">fold-4</button>
-            <button data-part-fold-a="fold-5">fold-5</button>
-        </div>
+        <button data-part-fold-a="fold-1">fold-1</button>
+        <button data-part-fold-a="fold-2">fold-2</button>
+        <button data-part-fold-a="fold-3">fold-3</button>
+        <button data-part-fold-a="fold-4">fold-4</button>
+        <button data-part-fold-a="fold-5">fold-5</button>
         <!-- Tools -->
         <div data-part-fold-tool>
             <button onclick="partman.closeContentAll();">X</button>

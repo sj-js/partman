@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<HTML>
+    <head>
+        <meta charset="utf-8" />
+        <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sj-js/partman/dist/css/partman.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/@sj-js/crossman/dist/js/crossman.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@sj-js/partman/dist/js/partman.min.js"></script>
+        <script>
+            var partman = new PartMan();
+        </script>
+        <script>
+            partman.setup({firstPartMarginHeight:100, partMarginHeight:50, lastPartMarginHeight:500}).detect();
+        </script>
+        <style>
+            html { scroll-behavior: smooth; }
+            button[data-part-fold-a] { width:150px; height:100px; cursor:pointer; }
+            .part-fold-active { border:2px solid skyblue; background:skyblue; }
+        </style>
+    </head>
+
+    <body>
+        <!-- Icons -->
+        <div>
+            <button data-part-fold-a="fold-1">fold-1</button>
+            <button data-part-fold-a="fold-2">fold-2</button>
+            <button data-part-fold-a="fold-3">fold-3</button>
+            <button data-part-fold-a="fold-4">fold-4</button>
+            <button data-part-fold-a="fold-5">fold-5</button>
+        </div>
+        <!-- Tools -->
+        <div data-part-fold-tool>
+            <button onclick="partman.closeContentAll();">X</button>
+        </div>
+        <!-- Contents -->
+        <div data-part-fold="fold-1">
+            1
+        </div>
+        <div data-part-fold="fold-2">
+            2
+        </div>
+        <div data-part-fold="fold-3">
+            3
+        </div>
+        <div data-part-fold="fold-4">
+            4
+        </div>
+        <div data-part-fold="fold-5">
+            5
+        </div>
+    </body>
+</HTML>
