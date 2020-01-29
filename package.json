@@ -1,6 +1,6 @@
 {
   "name": "@sj-js/partman",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "partman",
   "main": "./index.js",
   "author": "souljungkim@gmail.com",
