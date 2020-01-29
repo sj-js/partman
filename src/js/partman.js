@@ -306,14 +306,102 @@ PartMan.prototype.moveScroll = function(targetElement, partFoldElement){
             return this;
         }
     }
-    var deltaForScroll = -55;
-    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 50);
-    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 100);
-    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 125);
-    setTimeout(function(){ document.documentElement.scrollTop = targetElement.offsetTop +deltaForScroll; }, 150);
+
+    //TODO: TEST
+    PartMan.scrollTo(targetElement);
+
+    //TODO: TEst...
+    // var deltaForScroll = -55;
+    // var offsetTop = targetElement.offsetTop +deltaForScroll;
+    // setTimeout(function(){ PartMan.moveScroll(offsetTop); }, 50);
+    // setTimeout(function(){ PartMan.moveScroll(offsetTop); }, 100);
+    // setTimeout(function(){ PartMan.moveScroll(offsetTop); }, 125);
+    // setTimeout(function(){ PartMan.moveScroll(offsetTop); }, 150);
+
+    //TODO: Mobile?
     // setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 350);
     // setTimeout(function(){ document.documentElement.scrollTop = obj.offsetTop +deltaForScroll; }, 500);
 };
+
+//TODO: Test
+PartMan.moveScroll = function(y){
+    console.error('y,', y);
+    var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+    var isEdge = /Edge/.test(navigator.userAgent);
+    if (isIE11 || isEdge) {
+        window.scrollTo(0, y);
+        // setTimeout(function(){ window.scrollTo(0, 0); }, 300);  // adjust time according to your page. The better solution would be to possibly tie into some event and trigger once the autoscrolling goes to the top.
+    }else{
+        document.documentElement.scrollTop = y;
+    }
+};
+
+//TODO: Test
+//REF: https://stackoverflow.com/questions/52276194/window-scrollto-with-options-not-working-on-microsoft-edge
+//REF: https://nicegist.github.io/d210786daa23fd57db59634dd231f341
+PartMan.scrollTo = function(element){
+    // native smooth scrolling for Chrome, Firefox & Opera
+    // @see: https://caniuse.com/#feat=css-scroll-behavior
+    var nativeSmoothScrollTo = function(elem){
+        window.scroll({behavior: 'smooth', left: 0, top: elem.getBoundingClientRect().top + window.pageYOffset});
+    };
+
+    // polyfilled smooth scrolling for IE, Edge & Safari
+    var smoothScrollTo = function(to, duration){
+        var element = document.scrollingElement || document.documentElement,
+            start = element.scrollTop,
+            change = to - start,
+            startDate = +new Date();
+        // t = current time
+        // b = start value
+        // c = change in value
+        // d = duration
+        var easeInOutQuad = function(t, b, c, d){
+            t /= d/2;
+            if (t < 1)
+                return c/2*t*t + b;
+            t--;
+            return -c/2 * (t*(t-2) - 1) + b;
+        };
+        var animateScroll = function(){
+            var currentDate = +new Date();
+            var currentTime = currentDate - startDate;
+            element.scrollTop = parseInt(easeInOutQuad(currentTime, start, change, duration));
+            if (currentTime < duration) {
+                requestAnimationFrame(animateScroll);
+            }else {
+                element.scrollTop = to;
+            }
+        };
+        animateScroll();
+    };
+
+    // detect support for the behavior property in ScrollOptions
+    var supportsNativeSmoothScroll = 'scrollBehavior' in document.documentElement.style;
+
+    // smooth scrolling stub
+    var scrollToElem = function(elemSelector){
+        if (!elemSelector)
+            return;
+        var elem;
+        if (elemSelector instanceof Element){
+            elem = elemSelector;
+        }else{
+            elem = document.querySelector(elemSelector);
+        }
+        if (elem) {
+            if (supportsNativeSmoothScroll) {
+                nativeSmoothScrollTo(elem);
+            } else {
+                smoothScrollTo(elem.offsetTop, 600);
+            }
+        }
+    };
+
+    return scrollToElem(element);
+};
+
+
 
 PartMan.prototype.getPartFoldElement = function(id){
     var data = this.partFoldIdAndDataMap[id];
@@ -380,15 +468,15 @@ PartMan.prototype.makePartAreaElement = function(){
     //Insert Slider-Margin before Slider-Item
     //- First
     partElement = partElementList[0];
-    newEl('div').attr('data-part-margin', true).setStyle('background', 'linear-gradient(rgba(255,255,255,0), ' +partElement.style.background+ ')').appendToFrontOf(partElement);
+    newEl('div').attr('data-part-margin', true).setStyle('background', 'linear-gradient(rgba(255,255,255,0), ' +partElement.style.backgroundColor+ ')').appendToFrontOf(partElement);
     //- Last
     partElement = partElementList[(partElementList.length -1)];
-    newEl('div').attr('data-part-margin', true).setStyle('background', 'linear-gradient(' +partElement.style.background+ ', rgba(255,255,255,0))').appendToNextOf(partElement);
+    newEl('div').attr('data-part-margin', true).setStyle('background', 'linear-gradient(' +partElement.style.backgroundColor+ ', rgba(255,255,255,0))').appendToNextOf(partElement);
     //- ...
     for (var i=0; i<partElementList.length -1; i++){
         partElement = partElementList[i];
         var nextPartElement = partElementList[i +1];
-        newEl('div').attr('data-part-margin', true).setStyle('background', 'linear-gradient(' +partElement.style.background+ ', ' +nextPartElement.style.background+ ')').appendToFrontOf(nextPartElement);
+        newEl('div').attr('data-part-margin', true).setStyle('background', 'linear-gradient(' +partElement.style.backgroundColor+ ', ' +nextPartElement.style.backgroundColor+ ')').appendToFrontOf(nextPartElement);
     }
 
     this.resizePartAreaElement();
