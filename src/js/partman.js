@@ -46,6 +46,11 @@ try {
 
 
 
+PartMan.EVENT_OPEN = 'open';
+PartMan.EVENT_CLOSE = 'close';
+
+
+
 /***************************************************************************
  *
  * EVENT
@@ -228,13 +233,13 @@ PartMan.prototype.openContent = function(partFoldId, targetElement){
     // this.latestFoldElement = partFoldAnchorElement;
 
     var eventObject = {element:partFoldElement, partFoldId:partFoldId};
-    this.execEventListenerByEventName('open', eventObject);
+    this.execEventListenerByEventName(PartMan.EVENT_OPEN, eventObject);
     return this;
 };
 
 PartMan.prototype.closeContentAll = function(){
     /* 활성화 컨텐츠 모두 닫기 */
-    var that = this;;
+    var that = this;
     searchEl('[data-part-fold-a]').each(function(it){
         getEl(it).removeClass('part-fold-active');
     });
@@ -257,7 +262,7 @@ PartMan.prototype.closeContentAll = function(){
     this.nowPartFoldTargetElement = null;
     //Event
     var eventObject = {};
-    this.execEventListenerByEventName('close', eventObject);
+    this.execEventListenerByEventName(PartMan.EVENT_CLOSE, eventObject);
 };
 
 PartMan.prototype.whenResize = function(){
