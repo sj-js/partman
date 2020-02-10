@@ -12,23 +12,24 @@ cache:
     - "node_modules"
 
 before_deploy:
+  - npm install
   - pwd
   - ls dist/js/
-  
+
 deploy:
   - provider: releases
+    edge: true
     api_key:
       secure: "s/MvF2S9jNIcMBOSOAkb9Ui18dG4piqB6XwijJ+oDmVPbiT+BMIV7KgBJj5wAHsJ6M8aygxyn0QP982OWfTuXyPWh5kXdmqzPuI7kVKkbQfe0Q+iEcvDCWfOFvpUynKx40IQ1Xh6lVOuYpcU2dg+G23bfHqgzYYoCfNDlgQ+upGxCZBBjeo39Z770lDlvEMCdljzKirhLSovxxSgP0PM7IKo4713sKdbO1hn9qm/5FXa65OPbd2NaSl1mcCV5E6SqUDsKDs2XJdG1d0R5tp++nLqJfRmrvqHEsdUocqi9lKVPVrT849GH2uSl9qFc3rQJIZtuA3t49T9+CyBhWFVRHoF4SWKA5OZMKAobdrnQ8v3aCQoW7IvRY81SgVxFRjaQF1VfQd0cKsZQhcsw0Vfawn66+hP6x4LmA6r3FAR2UhhvI5LlXa9ZMH+7BEN51FCffj7a1pdS7RP3s+UVcR/hZULe9HG+ppU1V6X2drxyRhRc7FNGGn0L8bB4DkVCpjl5EzqervZwa3TukuTQMXUkcv6e0wiJkl5zJCs2Ccnk/HR4GnnY2X6gDzmaUB9jbvAUTdux7/C4zbDmxRl/L9qWTph46Ru/a4yiiuaI+TQuOOSGwqR+7+45GgHeXhZphqGwBv26ZZKAGZfvo50bJX4VgnOpjol3d6NS3MixVi9BQw="
     file:
       - dist/js/partman.min.js
       - dist/css/partman.min.css
-    skip_cleanup: true
     on:
       repo: sj-js/partman
       branch: master
   - provider: npm
+    edge: true
     email: "$NPM_EMAIL"
     api_key: "$NPM_API_TOKEN"
-    skip_cleanup: true
     on:
       branch: master
